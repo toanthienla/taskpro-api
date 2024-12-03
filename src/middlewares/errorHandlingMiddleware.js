@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { StatusCodes } from 'http-status-codes';
+import env from '~/config/enviroment.js';
 
 /**
  * Express error handling middleware for standardizing error responses
@@ -14,7 +15,7 @@ export const errorHandlingMiddleware = (err, req, res, next) => {
     stack: err.stack
   };
 
-  // if (env.BUILD_MODE !== 'dev') delete responseError.stack
+  if (env.BUILD_MODE !== 'dev') delete responseError.stack;
 
   res.status(responseError.statusCode).json(responseError);
 };

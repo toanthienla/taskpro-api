@@ -2,7 +2,7 @@
 import express from 'express';
 import { CONNECT_DB, CLOSE_DB } from '~/config/mongodb';
 import exitHook from 'async-exit-hook';
-import { env } from '~/config/enviroment.js';
+import env from '~/config/enviroment.js';
 import { APIs_V1 } from '~/routes/v1/index.js';
 import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware';
 
@@ -35,7 +35,7 @@ const START_SERVER = () => {
 // An IIFE (Immediately Invoked Function Expression)
 (async () => {
   try {
-    // await CONNECT_DB();
+    await CONNECT_DB();
     START_SERVER();
   } catch (error) {
     console.error(error);
