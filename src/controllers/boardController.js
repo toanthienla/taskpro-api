@@ -1,16 +1,15 @@
-const createNew = async (req, res) => {
+import { StatusCodes } from 'http-status-codes';
+
+const createNew = async (req, res, next) => {
   try {
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       message: 'Validation: create new board success'
     });
-    console.log(req.body);
   } catch (error) {
-    res.status(500).json({
-      errors: error.message()
-    });
+    next(error);
   }
 };
 
 export const boardController = {
   createNew
-}; 
+};

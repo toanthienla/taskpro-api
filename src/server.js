@@ -4,6 +4,7 @@ import { CONNECT_DB, CLOSE_DB } from '~/config/mongodb';
 import exitHook from 'async-exit-hook';
 import { env } from '~/config/enviroment.js';
 import { APIs_V1 } from '~/routes/v1/index.js';
+import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware';
 
 const app = express();
 
@@ -17,6 +18,9 @@ const START_SERVER = () => {
 
   // Use APIv1 routes
   app.use('/v1', APIs_V1);
+
+  // Express error hadling
+  app.use(errorHandlingMiddleware);
 
   app.listen(port, hostname, () => {
     console.log(`Hello ToanLa, I am running at http://${hostname}:${port}/`);

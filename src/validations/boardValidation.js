@@ -1,4 +1,6 @@
 import Joi from 'joi';
+import { StatusCodes } from 'http-status-codes';
+import ApiError from '~/utils/ApiError';
 
 const createNew = async (req, res, next) => {
   const schema = Joi.object({
@@ -10,10 +12,7 @@ const createNew = async (req, res, next) => {
     await schema.validateAsync(req.body, { abortEarly: false });
     next();
   } catch (error) {
-    // 422 code: request contains invalid data
-    res.status(422).json({
-      errors: new Error(error).message
-    });
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
   }
 };
 
