@@ -5,6 +5,8 @@ import exitHook from 'async-exit-hook';
 import env from '~/config/enviroment.js';
 import { APIs_V1 } from '~/routes/v1/index.js';
 import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware';
+import cors from 'cors';
+import { corsOptions } from '~/config/cors';
 
 const app = express();
 
@@ -12,6 +14,9 @@ const hostname = env.APP_HOST;
 const port = env.APP_PORT;
 
 const START_SERVER = () => {
+
+  // CORS domain whitelist
+  app.use(cors(corsOptions));
 
   // Enable req.body json data
   app.use(express.json());
