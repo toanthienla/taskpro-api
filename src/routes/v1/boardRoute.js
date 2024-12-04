@@ -9,6 +9,9 @@ Router.route('/')
   .get((req, res) => {
     res.status(StatusCodes.OK).json({ message: 'GET: boardRoutes.js' });
   })
-  .post(boardValidation.createNew, boardController.createNew);
+  .post(boardValidation.createBoard, boardController.createBoard);
+
+Router.route('/:id')
+  .get(boardController.getBoard);
 
 export const boardRoute = Router;

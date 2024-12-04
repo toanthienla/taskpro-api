@@ -1,6 +1,9 @@
 import Joi from 'joi';
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators';
 import { GET_DB } from '~/config/mongodb';
+import { ObjectId } from 'mongodb';
+import ApiError from '~/utils/ApiError';
+import { StatusCodes } from 'http-status-codes';
 
 const BOARD_COLLECTION_NAME = 'boards';
 const BOARD_COLLECTION_SCHEMA = Joi.object({
@@ -17,9 +20,15 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 });
 
-const createNew = async (data) => {
+const validateData = async (data) => {
+  return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false });
+};
+
+const createBoard = async (data) => {
   try {
-    return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(data);
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(
+      await validateData(data)
+    );
   } catch (error) {
     throw new Error(error);
   }
@@ -28,16 +37,28 @@ const createNew = async (data) => {
 const findOneById = async (id) => {
   try {
     return await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({
-      _id: id
+      _id: new ObjectId(id)
     });
   } catch (error) {
-    throw new Error(error);
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found by id in DB!');
+  }
+};
+
+// Add aggregation mongodb function
+const getBoard = async (boardId) => {
+  try {
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({
+      _id: new ObjectId(boardId)
+    });
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found by id in DB!');
   }
 };
 
 export const boardModel = {
-  createNew,
+  createBoard,
   findOneById,
   BOARD_COLLECTION_NAME,
-  BOARD_COLLECTION_SCHEMA
+  BOARD_COLLECTION_SCHEMA,
+  getBoard
 };

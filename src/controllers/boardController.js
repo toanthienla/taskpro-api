@@ -1,23 +1,31 @@
 import { StatusCodes } from 'http-status-codes';
 import { boardService } from '~/services/boardService';
-import { boardModel } from '~/models/boardModel';
 
-const createNew = async (req, res, next) => {
+const createBoard = async (req, res, next) => {
   try {
     // Services
-    const board = await boardService.createNew(req.body);
-
-    // Models
-    const { insertedId } = await boardModel.createNew(board);
-    const createdBoard = await boardModel.findOneById(insertedId);
+    const board = await boardService.createBoard(req.body);
 
     // Return response to client
-    res.status(StatusCodes.CREATED).json(createdBoard);
+    res.status(StatusCodes.CREATED).json(board);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getBoard = async (req, res, next) => {
+  try {
+    // Servies
+    const board = await boardService.getBoard(req.params.id);
+
+    // Return response to client
+    res.status(StatusCodes.OK).json(board);
   } catch (error) {
     next(error);
   }
 };
 
 export const boardController = {
-  createNew
+  createBoard,
+  getBoard
 };
