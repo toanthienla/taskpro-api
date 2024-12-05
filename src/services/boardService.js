@@ -1,5 +1,6 @@
 import { slugify } from '~/utils/formatters';
 import { boardModel } from '~/models/boardModel';
+import { cloneDeep } from 'lodash';
 
 const createBoard = async (reqBody) => {
   const board = {
@@ -15,7 +16,16 @@ const createBoard = async (reqBody) => {
 };
 
 const getBoard = async (boardId) => {
-  return await boardModel.getBoard(boardId);
+  const board = await boardModel.getBoard(boardId);
+
+  // Modify response board query, add card to column
+  const modifyBoard = cloneDeep(board);
+  modifyBoard.columns.forEach(column => {
+    column.cards = modifyBoard.cards.filter(card => card.columnId.equals(column._id));
+  });
+  delete modifyBoard.cards;
+
+  return modifyBoard;
 };
 
 export const boardService = {

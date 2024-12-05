@@ -1,7 +1,6 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import env from '~/config/enviroment.js';
 
-
 const MONGODB_URI = env.MONGODB_URI;
 const DATABASE_NAME = env.DATABASE_NAME;
 
