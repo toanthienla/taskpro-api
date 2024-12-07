@@ -28,7 +28,17 @@ const getBoard = async (boardId) => {
   return modifyBoard;
 };
 
+const putBoardColumnOrderIds = async (boardId, reqBody) => {
+  // If modifying data here, please ensure that corresponding validation
+  // is added in the boardModel to maintain data integrity.
+
+  // Models
+  const board = await boardModel.putBoardColumnOrderId(boardId, reqBody);
+  return board;
+};
+
 export const boardService = {
   createBoard,
-  getBoard
+  getBoard,
+  putBoardColumnOrderIds
 };

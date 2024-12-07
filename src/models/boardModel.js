@@ -81,10 +81,19 @@ const getBoard = async (boardId) => {
   }
 };
 
+// Call in columnService
 const pushColumnOrderIds = async (column) => {
   await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
     { _id: new ObjectId(column.boardId) },
     { $push: { columnOrderIds: new ObjectId(column._id) } },
+    { returnDocument: 'after' }
+  );
+};
+
+const putBoardColumnOrderId = async (boardId, columnOrderIds) => {
+  return await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+    { _id: new ObjectId(boardId) },
+    { $set: columnOrderIds },
     { returnDocument: 'after' }
   );
 };
@@ -95,5 +104,6 @@ export const boardModel = {
   BOARD_COLLECTION_NAME,
   BOARD_COLLECTION_SCHEMA,
   getBoard,
-  pushColumnOrderIds
+  pushColumnOrderIds,
+  putBoardColumnOrderId
 };

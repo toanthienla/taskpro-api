@@ -25,7 +25,20 @@ const getBoard = async (req, res, next) => {
   }
 };
 
+const putBoardColumnOrderIds = async (req, res, next) => {
+  try {
+    // Services
+    const board = await boardService.putBoardColumnOrderIds(req.params.id, req.body);
+
+    // Return response to client
+    res.status(StatusCodes.OK).json(board);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const boardController = {
   createBoard,
-  getBoard
+  getBoard,
+  putBoardColumnOrderIds
 };
