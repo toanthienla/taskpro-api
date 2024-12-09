@@ -13,7 +13,18 @@ const createColumn = async (req, res, next) => {
   }
 };
 
+const putColumnCardOrderIds = async (req, res, next) => {
+  try {
+    const column = await columnService.putColumnCardOrderIdsAPI(req.body.columnId, req.body.cardOrderIds);
+
+    res.status(StatusCodes.OK).json(column);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 export const columnController = {
-  createColumn
+  createColumn,
+  putColumnCardOrderIds
 };

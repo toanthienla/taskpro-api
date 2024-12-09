@@ -16,6 +16,15 @@ const createColumn = async (reqBody) => {
   return createdColumn;
 };
 
+const putColumnCardOrderIdsAPI = async (columnId, cardOrderIds) => {
+  // If modifying data here, please ensure that corresponding validation
+  // is added in the boardModel to maintain data integrity.
+
+  const column = await columnModel.putColumnCardOrderIdsAPI(columnId, cardOrderIds);
+  return column;
+};
+
 export const columnService = {
-  createColumn
+  createColumn,
+  putColumnCardOrderIdsAPI
 };

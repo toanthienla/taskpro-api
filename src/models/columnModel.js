@@ -56,10 +56,19 @@ const pushCardOrderIds = async (card) => {
   );
 };
 
+const putColumnCardOrderIdsAPI = async (columnId, cardOrderIds) => {
+  return await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
+    { _id: new ObjectId(columnId) },
+    { $set: { cardOrderIds: cardOrderIds } },
+    { returnDocument: 'after' }
+  );
+};
+
 export const columnModel = {
   COLUMN_COLLECTION_NAME,
   COLUMN_COLLECTION_SCHEMA,
   createColumn,
   findOneById,
-  pushCardOrderIds
+  pushCardOrderIds,
+  putColumnCardOrderIdsAPI
 };
