@@ -13,7 +13,18 @@ const createCard = async (req, res, next) => {
   }
 };
 
+const updateCardColumnId = async (req, res, next) => {
+  try {
+    const card = await cardService.updateCardColumnId(req.body.columnId, req.body.cardId);
+
+    res.status(StatusCodes.OK).json(card);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 export const cardController = {
-  createCard
+  createCard,
+  updateCardColumnId
 };

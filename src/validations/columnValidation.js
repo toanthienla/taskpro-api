@@ -33,7 +33,22 @@ const putColumnCardOrderIds = async (req, res, next) => {
   }
 };
 
+const deleteColumnCardOrderIds = async (req, res, next) => {
+  const schema = Joi.object({
+    columnId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    cardId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+  });
+
+  try {
+    await schema.validateAsync(req.query, { abortEarly: false });
+    next();
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message));
+  }
+};
+
 export const columnValidation = {
   createColumn,
-  putColumnCardOrderIds
+  putColumnCardOrderIds,
+  deleteColumnCardOrderIds
 };

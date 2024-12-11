@@ -48,10 +48,17 @@ const findOneById = async (id) => {
   }
 };
 
+const updateCardColumnId = async (columnId, cardId) => {
+  return await GET_DB().collection(CARD_COLLECTION_NAME).updateOne(
+    { _id: new ObjectId(cardId) },
+    { $set: { columnId: new ObjectId(columnId) } }
+  );
+};
 
 export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
   createCard,
-  findOneById
+  findOneById,
+  updateCardColumnId
 };

@@ -16,6 +16,14 @@ const createCard = async (reqBody) => {
   return createdCard;
 };
 
+const updateCardColumnId = async (columnId, cardId) => {
+  // If modifying data here, please ensure that corresponding validation
+  // is added in the boardModel to maintain data integrity.
+  const card = await cardModel.updateCardColumnId(columnId, cardId);
+  return card;
+};
+
 export const cardService = {
-  createCard
+  createCard,
+  updateCardColumnId
 };

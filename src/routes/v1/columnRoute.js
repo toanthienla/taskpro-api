@@ -6,6 +6,7 @@ const Router = express.Router();
 
 Router.route('/')
   .post(columnValidation.createColumn, columnController.createColumn)
-  .put(columnValidation.putColumnCardOrderIds, columnController.putColumnCardOrderIds);
+  .put(columnValidation.putColumnCardOrderIds, columnController.putColumnCardOrderIds)
+  .delete(columnValidation.deleteColumnCardOrderIds, columnController.deleteColumnCardOrderIds);
 
 export const columnRoute = Router;

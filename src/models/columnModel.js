@@ -64,11 +64,20 @@ const putColumnCardOrderIdsAPI = async (columnId, cardOrderIds) => {
   );
 };
 
+const deleteColumnCardOrderIds = async (columnId, cardId) => {
+  const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).updateOne(
+    { _id: new ObjectId(columnId) },
+    { $pull: { cardOrderIds: cardId } }
+  );
+  return result;
+};
+
 export const columnModel = {
   COLUMN_COLLECTION_NAME,
   COLUMN_COLLECTION_SCHEMA,
   createColumn,
   findOneById,
   pushCardOrderIds,
-  putColumnCardOrderIdsAPI
+  putColumnCardOrderIdsAPI,
+  deleteColumnCardOrderIds
 };
