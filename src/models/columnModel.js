@@ -51,7 +51,7 @@ const findOneById = async (id) => {
 const pushCardOrderIds = async (card) => {
   await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
     { _id: new ObjectId(card.columnId) },
-    { $push: { cardOrderIds: new ObjectId(card._id) } },
+    { $push: { cardOrderIds: card._id.toString() } },
     { returnDocument: 'after' }
   );
 };
