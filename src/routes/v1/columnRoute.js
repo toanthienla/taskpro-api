@@ -9,4 +9,7 @@ Router.route('/')
   .put(columnValidation.putColumnCardOrderIds, columnController.putColumnCardOrderIds)
   .delete(columnValidation.deleteColumnCardOrderIds, columnController.deleteColumnCardOrderIds);
 
+Router.route('/:columnId')
+  .delete(columnValidation.deleteColumn, columnController.deleteColumn);
+
 export const columnRoute = Router;

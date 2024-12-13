@@ -25,9 +25,19 @@ const putColumnCardOrderIds = async (req, res, next) => {
 
 const deleteColumnCardOrderIds = async (req, res, next) => {
   try {
-    const column = await columnService.deleteColumnCardOrderIds(req.query.columnId, req.query.cardId);
+    await columnService.deleteColumnCardOrderIds(req.query.columnId, req.query.cardId);
 
-    res.status(StatusCodes.NO_CONTENT).json(column);
+    res.status(StatusCodes.NO_CONTENT).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteColumn = async (req, res, next) => {
+  try {
+    await columnService.deleteColumn(req.params.columnId);
+
+    res.status(StatusCodes.NO_CONTENT).end();
   } catch (error) {
     next(error);
   }
@@ -37,5 +47,6 @@ const deleteColumnCardOrderIds = async (req, res, next) => {
 export const columnController = {
   createColumn,
   putColumnCardOrderIds,
-  deleteColumnCardOrderIds
+  deleteColumnCardOrderIds,
+  deleteColumn
 };

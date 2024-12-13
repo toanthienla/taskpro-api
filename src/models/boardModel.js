@@ -85,7 +85,7 @@ const getBoard = async (boardId) => {
 const pushColumnOrderIds = async (column) => {
   await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
     { _id: new ObjectId(column.boardId) },
-    { $push: { columnOrderIds: new ObjectId(column._id) } },
+    { $push: { columnOrderIds: column._id } },
     { returnDocument: 'after' }
   );
 };
@@ -98,6 +98,15 @@ const putBoardColumnOrderId = async (boardId, columnOrderIds) => {
   );
 };
 
+const deleteBoardColumnOrderIds = async (columnId) => {
+  return await GET_DB()
+    .collection(BOARD_COLLECTION_NAME)
+    .updateOne(
+      { columnOrderIds: { $in: [columnId] } }, // Find the board
+      { $pull: { columnOrderIds: columnId } } // Remove columnId
+    );
+};
+
 export const boardModel = {
   createBoard,
   findOneById,
@@ -105,5 +114,6 @@ export const boardModel = {
   BOARD_COLLECTION_SCHEMA,
   getBoard,
   pushColumnOrderIds,
-  putBoardColumnOrderId
+  putBoardColumnOrderId,
+  deleteBoardColumnOrderIds
 };
