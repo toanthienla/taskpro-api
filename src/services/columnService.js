@@ -1,5 +1,6 @@
 import { columnModel } from '~/models/columnModel';
 import { boardModel } from '~/models/boardModel';
+import { cardModel } from '~/models/cardModel';
 
 const createColumn = async (reqBody) => {
   const column = {
@@ -30,8 +31,17 @@ const deleteColumnCardOrderIds = async (columnId, cardId) => {
   return column;
 };
 
+const deleteColumn = async (columnId) => {
+  // If modifying data here, please ensure that corresponding validation
+  // is added in the boardModel to maintain data integrity.
+  await boardModel.deleteBoardColumnOrderIds(columnId);
+  await columnModel.deleteColumn(columnId);
+  await cardModel.deleteCardByColumnId(columnId);
+};
+
 export const columnService = {
   createColumn,
   putColumnCardOrderIdsAPI,
-  deleteColumnCardOrderIds
+  deleteColumnCardOrderIds,
+  deleteColumn
 };

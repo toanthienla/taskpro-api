@@ -65,11 +65,16 @@ const putColumnCardOrderIdsAPI = async (columnId, cardOrderIds) => {
 };
 
 const deleteColumnCardOrderIds = async (columnId, cardId) => {
-  const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).updateOne(
+  await GET_DB().collection(COLUMN_COLLECTION_NAME).updateOne(
     { _id: new ObjectId(columnId) },
     { $pull: { cardOrderIds: cardId } }
   );
-  return result;
+};
+
+const deleteColumn = async (columnId) => {
+  await GET_DB().collection(COLUMN_COLLECTION_NAME).deleteOne(
+    { _id: new ObjectId(columnId) }
+  );
 };
 
 export const columnModel = {
@@ -79,5 +84,6 @@ export const columnModel = {
   findOneById,
   pushCardOrderIds,
   putColumnCardOrderIdsAPI,
-  deleteColumnCardOrderIds
+  deleteColumnCardOrderIds,
+  deleteColumn
 };
