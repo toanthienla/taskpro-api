@@ -85,7 +85,7 @@ const getBoard = async (boardId) => {
 const pushColumnOrderIds = async (column) => {
   await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
     { _id: new ObjectId(column.boardId) },
-    { $push: { columnOrderIds: column._id } },
+    { $push: { columnOrderIds: column._id.toString() } },
     { returnDocument: 'after' }
   );
 };
