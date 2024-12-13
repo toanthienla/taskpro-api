@@ -27,9 +27,16 @@ const START_SERVER = () => {
   // Express error hadling
   app.use(errorHandlingMiddleware);
 
-  app.listen(port, hostname, () => {
-    console.log(`Hello ToanLa, I am running at http://${hostname}:${port}/`);
-  });
+  if (env.BUILD_MODE === 'production') {
+    // Config in Render.com deploy
+    app.listen(process.env.PORT, () => {
+      console.log(`Production mode: TaskPro is running at http://${hostname}:${port}/`);
+    });
+  } else {
+    app.listen(port, hostname, () => {
+      console.log(`Dev mode: TaskPro is running at http://${hostname}:${port}/`);
+    });
+  }
 
   exitHook(() => {
     console.log('Clean Mongodb');
