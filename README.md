@@ -21,7 +21,7 @@ This repository houses the backend API for [**TaskPro**](https://taskpro-web.ver
 ## API Structure
 
 <div align="center">
-  <img src="public/apiArchitecture.png" alt="TaskPro API Architecture Diagram" width="100%"/> 
+  <img src="graph/apiArchitecture.png" alt="TaskPro API Architecture Diagram" width="100%"/> 
 </div>
 
 -   **Middlewares:** Handle common functionalities like error handling.
