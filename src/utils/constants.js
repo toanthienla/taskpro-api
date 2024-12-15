@@ -1,6 +1,6 @@
 export const WHITELIST_DOMAINS = [
   // Taskpro domain hosting
-  'https://taskpro-web.vercel.app/'
+  'https://taskpro-web.vercel.app'
 ];
 
 export const BOARD_TYPES = {
