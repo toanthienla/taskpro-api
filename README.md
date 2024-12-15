@@ -1,4 +1,4 @@
-### TaskPro API
+# TaskPro API
 
 This repository houses the backend API for **TaskPro**.
 
