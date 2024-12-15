@@ -30,7 +30,7 @@ const START_SERVER = () => {
   if (env.BUILD_MODE === 'production') {
     // Config in Render.com deploy
     app.listen(process.env.PORT, () => {
-      console.log(`Production mode: TaskPro is running at http://${hostname}:${port}/`);
+      console.log('Production mode: TaskPro is running at https://taskpro-api-hwly.onrender.com');
     });
   } else {
     app.listen(port, hostname, () => {

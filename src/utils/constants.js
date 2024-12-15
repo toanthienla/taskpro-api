@@ -1,6 +1,6 @@
 export const WHITELIST_DOMAINS = [
   // Taskpro domain hosting
-  'http://localhost:5173'
+  'https://taskpro-5wpnl8l2u-toanthienlas-projects.vercel.app'
 ];
 
 export const BOARD_TYPES = {
