@@ -1,8 +1,8 @@
-## Introduction
+### TaskPro API
 
 This repository houses the backend API for **TaskPro**.
 
-### Key Features
+## Key Features
 
 -   **RESTful Architecture:** Follows best practices to ensure scalability, maintainability, and ease of use.
 
