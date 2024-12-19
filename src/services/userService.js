@@ -4,6 +4,10 @@ import ApiError from '~/utils/ApiError';
 import bcryptjs from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { pickUser } from '~/utils/formatters';
+import { WEBSITE_DOMAIN } from '~/utils/constants';
+import { BrevoProvider } from '~/providers/BrevoProvider';
+import env from '~/config/enviroment';
+import { JwtProvider } from '~/providers/JwtProvider';
 
 const createUser = async (reqBody) => {
   const email = reqBody.email;
@@ -12,7 +16,7 @@ const createUser = async (reqBody) => {
   // Check email existed?
   const isUserExisted = await userModel.findOneByEmail(email);
   if (isUserExisted) {
-    throw new ApiError(StatusCodes.CONFLICT, 'Email already existed');
+    throw new ApiError(StatusCodes.CONFLICT, 'Email already registered.');
   }
 
   // Create new user data
@@ -29,12 +33,84 @@ const createUser = async (reqBody) => {
   const { insertedId } = await userModel.createUser(newUser);
   const createdUser = await userModel.findOneById(insertedId);
 
-  // Send email to user to verify
+  // Form content email
+  const verificationLink = `${WEBSITE_DOMAIN}/account/verification?email=${createdUser.email}&token=${createdUser.verifyToken}`;
+  const subject = 'Welcome to TaskPro! Verify your email to get started 🎉';
+  const htmlContent = `
+      <p>Hi ${createdUser.username},</p>
+        <p>Thanks for signing up for TaskPro! We're excited to have you on board.</p>
+        <p>To unlock the full power of TaskPro and start managing your tasks like a pro, please verify your email address by clicking the button below:</p>
+        <p style="text-align: left;">
+        <a href="${verificationLink}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+        </p>
+      <p>This will confirm your account and give you access to all of TaskPro's amazing features.</p>
+      <br><p>If you didn't create an account with TaskPro, you can safely ignore this email.</p>
+      <br><p>Happy tasking,</p>
+      <p>TaskPro</p>
+  `;
+
+  // Use Provider to send email
+  await BrevoProvider.sendEmail(email, subject, htmlContent);
 
   // Return user data to controller
   return pickUser(createdUser);
 };
 
+const validateUser = async (reqBody) => {
+  const email = reqBody.email;
+  const token = reqBody.token;
+
+  // Check user email and token correct?
+  const user = await userModel.findOneByEmail(email);
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  if (user.isActive) {
+    throw new ApiError(StatusCodes.CONFLICT, 'Account already activated');
+  }
+  if (token !== user.verifyToken) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid verification token');
+  }
+
+  // Update verifyToken and isActive
+  const updateData = {
+    verifyToken: null,
+    isActive: true
+  };
+  await userModel.update(user._id, updateData);
+
+  return pickUser(user);
+};
+
+const loginUser = async (reqBody) => {
+  const email = reqBody.email;
+  const password = reqBody.password;
+
+  const user = await userModel.findOneByEmail(email);
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Invalid email or password');
+  }
+  if (!bcryptjs.compareSync(password, user.password)) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Invalid email or password');
+  }
+  if (!user.isActive) {
+    throw new ApiError(StatusCodes.CONFLICT, 'Account is not yet activated');
+  }
+
+  const userInfo = {
+    _id: user._id,
+    email: email
+  };
+
+  // Generate access and refresh token (JWT)
+  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, env.ACCESS_TOKEN_LIFE);
+  const refreshToken = await JwtProvider.generateToken(userInfo, env.REFRESH_TOKEN_PRIVATE_KEY, env.REFRESH_TOKEN_LIFE);
+
+  return { accessToken, refreshToken, ...pickUser(user) };
+};
+
 export const userService = {
-  createUser
+  createUser,
+  validateUser,
+  loginUser
 };
