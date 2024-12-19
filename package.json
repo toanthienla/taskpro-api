@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@babel/runtime": "^7.22.10",
+        "@getbrevo/brevo": "^2.2.0",
         "async-exit-hook": "^2.0.1",
         "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
@@ -25,6 +26,7 @@
         "express": "^4.18.2",
         "http-status-codes": "^2.3.0",
         "joi": "^17.13.3",
+        "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",
         "mongodb": "^6.11.0",
         "taskpro-api": "file:",
