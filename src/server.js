@@ -7,6 +7,7 @@ import { APIs_V1 } from '~/routes/v1/index.js';
 import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware';
 import cors from 'cors';
 import { corsOptions } from '~/config/cors';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -14,6 +15,14 @@ const hostname = env.APP_HOST;
 const port = env.APP_PORT;
 
 const START_SERVER = () => {
+  // Disable browser caching request
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  });
+
+  // Config Cookie Parser (get cookies from browser)
+  app.use(cookieParser());
 
   // CORS domain whitelist
   app.use(cors(corsOptions));
