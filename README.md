@@ -1,6 +1,6 @@
 # TaskPro API
 
-This repository houses the backend API for [**TaskPro**](https://taskpro-web.vercel.app/).
+This repository houses the backend API for [**TaskPro**].
 
 ## Key Features
 
