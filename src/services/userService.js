@@ -56,6 +56,7 @@ const createUser = async (reqBody) => {
   return pickUser(createdUser);
 };
 
+// Gmail validation
 const validateUser = async (reqBody) => {
   const email = reqBody.email;
   const token = reqBody.token;
@@ -103,14 +104,27 @@ const loginUser = async (reqBody) => {
   };
 
   // Generate access and refresh token (JWT)
-  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, env.ACCESS_TOKEN_LIFE);
+  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, 5);
   const refreshToken = await JwtProvider.generateToken(userInfo, env.REFRESH_TOKEN_PRIVATE_KEY, env.REFRESH_TOKEN_LIFE);
 
   return { accessToken, refreshToken, ...pickUser(user) };
 };
 
+const refreshToken = async (clientRefreshToken) => {
+  const refreshTokenDecoded = await JwtProvider.verifyToken(clientRefreshToken, env.REFRESH_TOKEN_PRIVATE_KEY);
+
+  const userInfo = {
+    _id: refreshTokenDecoded._id,
+    email: refreshTokenDecoded.email
+  };
+
+  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, 5);
+  return { accessToken };
+};
+
 export const userService = {
   createUser,
   validateUser,
-  loginUser
+  loginUser,
+  refreshToken
 };

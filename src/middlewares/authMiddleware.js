@@ -23,7 +23,7 @@ const isAuthorized = async (req, res, next) => {
       return;
     }
 
-    next(new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized.'));
+    next(new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized. Access token false'));
   }
 };
 
