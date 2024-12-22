@@ -122,9 +122,38 @@ const refreshToken = async (clientRefreshToken) => {
   return { accessToken };
 };
 
+const updateUser = async (userId, reqBody) => {
+  const user = await userModel.findOneById(userId);
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  if (!user.isActive) {
+    throw new ApiError(StatusCodes.CONFLICT, 'Account is not yet activated');
+  }
+
+  const updateData = {};
+  if (reqBody.current_password && reqBody.new_password) {
+    if (!bcryptjs.compareSync(reqBody.current_password, user.password)) {
+      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Invalid current password');
+    }
+    updateData.password = bcryptjs.hashSync(reqBody.new_password, 8);
+  } else {
+    // Update profile data
+    updateData.displayName = reqBody.displayName;
+  }
+
+  const updatedUser = await userModel.update(userId, {
+    ...updateData,
+    updatedAt: new Date()
+  });
+
+  return pickUser(updatedUser);
+};
+
 export const userService = {
   createUser,
   validateUser,
   loginUser,
-  refreshToken
+  refreshToken,
+  updateUser
 };
