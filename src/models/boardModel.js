@@ -19,6 +19,13 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
     Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
   ).default([]),
 
+  ownersIds: Joi.array().items(
+    Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+  ).default([]),
+  membersIds: Joi.array().items(
+    Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+  ).default([]),
+
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)
@@ -107,6 +114,49 @@ const deleteBoardColumnOrderIds = async (columnId) => {
     );
 };
 
+const getBoards = async (userId, page, itemsPerPage) => {
+  try {
+    const queryCondition = {
+      $or: [
+        // $all: Find me documents where this array field has these specific values
+        { ownersIds: { $all: [new ObjectId(userId)] } },
+        { membersIds: { $all: [new ObjectId(userId)] } }
+      ],
+      _destroy: false
+    };
+
+    const res = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate(
+      [
+        {
+          $match: { $and: [queryCondition] }
+        },
+        {
+          $sort: { updatedAt: -1 }
+        },
+        {
+          // $facet: Split the output into separate branches
+          $facet: {
+            'queryBoards': [
+              { $skip: (page - 1) * itemsPerPage },
+              { $limit: itemsPerPage }
+            ],
+
+            'queryTotalBoards': [{ $count: 'totalBoards' }]
+          }
+        }
+      ],
+      { collation: { locale: 'en' } } // Sort a before A
+    ).toArray();
+
+    return {
+      boards: res[0].queryBoards || [],
+      totalBoards: res[0].queryTotalBoards[0]?.totalBoards || 0
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export const boardModel = {
   createBoard,
   findOneById,
@@ -115,5 +165,6 @@ export const boardModel = {
   getBoard,
   pushColumnOrderIds,
   putBoardColumnOrderId,
-  deleteBoardColumnOrderIds
+  deleteBoardColumnOrderIds,
+  getBoards
 };
