@@ -8,6 +8,7 @@ import { WEBSITE_DOMAIN } from '~/utils/constants';
 import { BrevoProvider } from '~/providers/BrevoProvider';
 import env from '~/config/enviroment';
 import { JwtProvider } from '~/providers/JwtProvider';
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider';
 
 const createUser = async (reqBody) => {
   const email = reqBody.email;
@@ -104,7 +105,7 @@ const loginUser = async (reqBody) => {
   };
 
   // Generate access and refresh token (JWT)
-  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, 5);
+  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, env.ACCESS_TOKEN_LIFE);
   const refreshToken = await JwtProvider.generateToken(userInfo, env.REFRESH_TOKEN_PRIVATE_KEY, env.REFRESH_TOKEN_LIFE);
 
   return { accessToken, refreshToken, ...pickUser(user) };
@@ -118,11 +119,11 @@ const refreshToken = async (clientRefreshToken) => {
     email: refreshTokenDecoded.email
   };
 
-  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, 5);
+  const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_PRIVATE_KEY, env.ACCESS_TOKEN_LIFE);
   return { accessToken };
 };
 
-const updateUser = async (userId, reqBody) => {
+const updateUser = async (userId, reqBody, userAvatarFile) => {
   const user = await userModel.findOneById(userId);
   if (!user) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
@@ -137,9 +138,12 @@ const updateUser = async (userId, reqBody) => {
       throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Invalid current password');
     }
     updateData.password = bcryptjs.hashSync(reqBody.new_password, 8);
-  } else {
-    // Update profile data
+  } else if (reqBody.displayName) {
     updateData.displayName = reqBody.displayName;
+  } else if (userAvatarFile) {
+    // Upload avatar to cloudinary
+    const uploadResult = await CloudinaryProvider.streamUpload(userAvatarFile.buffer, 'avatars');
+    updateData.avatar = uploadResult.secure_url;
   }
 
   const updatedUser = await userModel.update(userId, {
