@@ -37,8 +37,21 @@ const putBoardColumnOrderIds = async (req, res, next) => {
   }
 };
 
+const getBoards = async (req, res, next) => {
+  try {
+    const userId = req.jwtDecoded._id;
+    const { page, itemsPerPage } = req.query;
+    const { boards, totalBoards } = await boardService.getBoards(userId, page, itemsPerPage);
+
+    res.status(StatusCodes.OK).json({ boards, totalBoards });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const boardController = {
   createBoard,
   getBoard,
-  putBoardColumnOrderIds
+  putBoardColumnOrderIds,
+  getBoards
 };
