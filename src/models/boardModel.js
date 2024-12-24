@@ -37,9 +37,9 @@ const validateData = async (data) => {
 
 const createBoard = async (data) => {
   try {
-    return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(
-      await validateData(data)
-    );
+    data = await validateData(data);
+    data.ownersIds = data.ownersIds.map(id => new ObjectId(id));
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(data);
   } catch (error) {
     throw new Error(error);
   }
@@ -56,14 +56,20 @@ const findOneById = async (id) => {
 };
 
 // Add aggregation mongodb function
-const getBoard = async (boardId) => {
+const getBoard = async (userId, boardId) => {
   try {
+    const queryCondition = {
+      _id: new ObjectId(boardId),
+      $or: [
+        { ownersIds: { $all: [new ObjectId(userId)] } },
+        { membersIds: { $all: [new ObjectId(userId)] } }
+      ],
+      _destroy: false
+    };
+
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
       {
-        $match: {
-          _id: new ObjectId(boardId),
-          _destroy: false
-        }
+        $match: { $and: [queryCondition] }
       },
       {
         $lookup: {
@@ -82,6 +88,7 @@ const getBoard = async (boardId) => {
         }
       }
     ]).toArray();
+
     return result[0];
   } catch (error) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found by id in DB!');
@@ -131,7 +138,7 @@ const getBoards = async (userId, page, itemsPerPage) => {
           $match: { $and: [queryCondition] }
         },
         {
-          $sort: { updatedAt: -1 }
+          $sort: { createdAt: -1 }
         },
         {
           // $facet: Split the output into separate branches

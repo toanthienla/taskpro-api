@@ -13,9 +13,9 @@ const createColumn = async (req, res, next) => {
   }
 };
 
-const putColumnCardOrderIds = async (req, res, next) => {
+const updateColumn = async (req, res, next) => {
   try {
-    const column = await columnService.putColumnCardOrderIdsAPI(req.body.columnId, req.body.cardOrderIds);
+    const column = await columnService.updateColumn(req.body);
 
     res.status(StatusCodes.OK).json(column);
   } catch (error) {
@@ -46,7 +46,7 @@ const deleteColumn = async (req, res, next) => {
 
 export const columnController = {
   createColumn,
-  putColumnCardOrderIds,
+  updateColumn,
   deleteColumnCardOrderIds,
   deleteColumn
 };

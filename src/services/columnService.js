@@ -17,10 +17,16 @@ const createColumn = async (reqBody) => {
   return createdColumn;
 };
 
-const putColumnCardOrderIdsAPI = async (columnId, cardOrderIds) => {
-  // If modifying data here, please ensure that corresponding validation
-  // is added in the boardModel to maintain data integrity.
-  const column = await columnModel.putColumnCardOrderIdsAPI(columnId, cardOrderIds);
+const updateColumn = async (reqBody) => {
+  const updateData = {};
+
+  if (reqBody.cardOrderIds) {
+    updateData.cardOrderIds = reqBody.cardOrderIds;
+  } else if (reqBody.title) {
+    updateData.title = reqBody.title;
+  }
+
+  const column = await columnModel.updateColumn(reqBody.columnId, updateData);
   return column;
 };
 
@@ -41,7 +47,7 @@ const deleteColumn = async (columnId) => {
 
 export const columnService = {
   createColumn,
-  putColumnCardOrderIdsAPI,
+  updateColumn,
   deleteColumnCardOrderIds,
   deleteColumn
 };

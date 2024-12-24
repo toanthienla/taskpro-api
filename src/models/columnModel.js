@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 import ApiError from '~/utils/ApiError';
 import { StatusCodes } from 'http-status-codes';
 
+const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt'];
 const COLUMN_COLLECTION_NAME = 'columns';
 const COLUMN_COLLECTION_SCHEMA = Joi.object({
   boardId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
@@ -56,12 +57,24 @@ const pushCardOrderIds = async (card) => {
   );
 };
 
-const putColumnCardOrderIdsAPI = async (columnId, cardOrderIds) => {
-  return await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
-    { _id: new ObjectId(columnId) },
-    { $set: { cardOrderIds: cardOrderIds } },
-    { returnDocument: 'after' }
-  );
+const updateColumn = async (columnId, updateData) => {
+  try {
+    // Filter data before update
+    Object.keys(updateData).forEach(fieldName => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete updateData[fieldName];
+      }
+    });
+
+    const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(columnId) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 const deleteColumnCardOrderIds = async (columnId, cardId) => {
@@ -83,7 +96,7 @@ export const columnModel = {
   createColumn,
   findOneById,
   pushCardOrderIds,
-  putColumnCardOrderIdsAPI,
+  updateColumn,
   deleteColumnCardOrderIds,
   deleteColumn
 };

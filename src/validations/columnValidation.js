@@ -17,12 +17,13 @@ const createColumn = async (req, res, next) => {
   }
 };
 
-const putColumnCardOrderIds = async (req, res, next) => {
+const updateColumn = async (req, res, next) => {
   const schema = Joi.object({
     columnId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    cardOrderIds: Joi.array().required().items(
+    cardOrderIds: Joi.array().items(
       Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
-    )
+    ),
+    title: Joi.string().min(3).max(50).trim().strict()
   });
 
   try {
@@ -62,7 +63,7 @@ const deleteColumn = async (req, res, next) => {
 
 export const columnValidation = {
   createColumn,
-  putColumnCardOrderIds,
+  updateColumn,
   deleteColumnCardOrderIds,
   deleteColumn
 };
