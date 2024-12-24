@@ -4,7 +4,8 @@ import { boardService } from '~/services/boardService';
 const createBoard = async (req, res, next) => {
   try {
     // Services
-    const board = await boardService.createBoard(req.body);
+    const userId = req.jwtDecoded._id;
+    const board = await boardService.createBoard(userId, req.body);
 
     // Return response to client
     res.status(StatusCodes.CREATED).json(board);
@@ -16,7 +17,8 @@ const createBoard = async (req, res, next) => {
 const getBoard = async (req, res, next) => {
   try {
     // Servies
-    const board = await boardService.getBoard(req.params.id);
+    const userId = req.jwtDecoded._id;
+    const board = await boardService.getBoard(userId, req.params.id);
 
     // Return response to client
     res.status(StatusCodes.OK).json(board);

@@ -2,11 +2,14 @@ import { slugify } from '~/utils/formatters';
 import { boardModel } from '~/models/boardModel';
 import { cloneDeep } from 'lodash';
 import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/utils/constants';
+import ApiError from '~/utils/ApiError';
+import { StatusCodes } from 'http-status-codes';
 
-const createBoard = async (reqBody) => {
+const createBoard = async (userId, reqBody) => {
   const board = {
     ...reqBody,
-    slug: slugify(reqBody.title)
+    slug: slugify(reqBody.title),
+    ownersIds: [userId]
   };
 
   // Models
@@ -16,11 +19,11 @@ const createBoard = async (reqBody) => {
   return createdBoard;
 };
 
-const getBoard = async (boardId) => {
-  const board = await boardModel.getBoard(boardId);
+const getBoard = async (userId, boardId) => {
+  const board = await boardModel.getBoard(userId, boardId);
 
   if (!board) {
-    return null;
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found by id in DB!');
   }
 
   // Modify response board query, add card to column
