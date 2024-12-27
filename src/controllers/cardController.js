@@ -13,10 +13,10 @@ const createCard = async (req, res, next) => {
   }
 };
 
-const updateCardColumnId = async (req, res, next) => {
+const updateCard = async (req, res, next) => {
   try {
-    const card = await cardService.updateCardColumnId(req.body.columnId, req.body.cardId);
-
+    const cardId = req.params.cardId;
+    const card = await cardService.updateCard(cardId, req.body, req.file);
     res.status(StatusCodes.OK).json(card);
   } catch (error) {
     next(error);
@@ -26,5 +26,5 @@ const updateCardColumnId = async (req, res, next) => {
 
 export const cardController = {
   createCard,
-  updateCardColumnId
+  updateCard
 };
