@@ -1,9 +1,11 @@
 import Joi from 'joi';
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators';
+import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators';
 import { GET_DB } from '~/config/mongodb';
 import { ObjectId } from 'mongodb';
 import ApiError from '~/utils/ApiError';
 import { StatusCodes } from 'http-status-codes';
+
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt'];
 
 const CARD_COLLECTION_NAME = 'cards';
 const CARD_COLLECTION_SCHEMA = Joi.object({
@@ -12,6 +14,17 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
 
   title: Joi.string().required().min(3).max(50).trim().strict(),
   description: Joi.string().optional(),
+
+  cover: Joi.string().default(null),
+  memberIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)).default([]),
+  comments: Joi.array().items({
+    userId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    email: Joi.string().pattern(EMAIL_RULE).message(EMAIL_RULE_MESSAGE),
+    avatar: Joi.string(),
+    displayName: Joi.string(),
+    content: Joi.string().required().trim().strict(),
+    commentedAt: Joi.date().timestamp() // use $push can not use Data.now
+  }).default([]),
 
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null),
@@ -48,11 +61,23 @@ const findOneById = async (id) => {
   }
 };
 
-const updateCardColumnId = async (columnId, cardId) => {
-  return await GET_DB().collection(CARD_COLLECTION_NAME).updateOne(
-    { _id: new ObjectId(cardId) },
-    { $set: { columnId: new ObjectId(columnId) } }
-  );
+const updateCard = async (updateData) => {
+  try {
+    Object.keys(updateData).forEach(fieldName => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete updateData[fieldName];
+      }
+    });
+
+    const result = await GET_DB().collection(CARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(updateData.cardId) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 const deleteCardByColumnId = async (columnId) => {
@@ -66,6 +91,6 @@ export const cardModel = {
   CARD_COLLECTION_SCHEMA,
   createCard,
   findOneById,
-  updateCardColumnId,
+  updateCard,
   deleteCardByColumnId
 };

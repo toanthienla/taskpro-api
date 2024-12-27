@@ -6,7 +6,6 @@ import { StatusCodes } from 'http-status-codes';
 // Function to authenticate access token request is valid
 const isAuthorized = async (req, res, next) => {
   const clientAccessToken = req.cookies?.accessToken;
-
   if (!clientAccessToken) {
     next(new ApiError(StatusCodes.UNAUTHORIZED, 'Access token not found.'));
     return;

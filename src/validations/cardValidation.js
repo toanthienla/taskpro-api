@@ -18,10 +18,11 @@ const createCard = async (req, res, next) => {
   }
 };
 
-const updateCardColumnId = async (req, res, next) => {
+const updateCard = async (req, res, next) => {
   const schema = Joi.object({
     columnId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    cardId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+    title: Joi.string().trim().strict(),
+    description: Joi.string().trim().strict()
   });
 
   try {
@@ -34,5 +35,5 @@ const updateCardColumnId = async (req, res, next) => {
 
 export const cardValidation = {
   createCard,
-  updateCardColumnId
+  updateCard
 };
