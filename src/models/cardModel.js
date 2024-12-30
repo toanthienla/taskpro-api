@@ -23,7 +23,7 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
     avatar: Joi.string(),
     displayName: Joi.string(),
     content: Joi.string().required().trim().strict(),
-    commentedAt: Joi.date().timestamp() // use $push can not use Data.now
+    commentedAt: Joi.date().timestamp() // Date.now can only use with insertOne
   }).default([]),
 
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
@@ -81,9 +81,26 @@ const updateCard = async (updateData) => {
 };
 
 const deleteCardByColumnId = async (columnId) => {
-  return await GET_DB().collection(CARD_COLLECTION_NAME).deleteMany(
-    { columnId: new ObjectId(columnId) }
-  );
+  try {
+    await GET_DB().collection(CARD_COLLECTION_NAME).deleteMany(
+      { columnId: new ObjectId(columnId) }
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const unshiftNewComment = async (cardId, comment) => {
+  try {
+    const result = await GET_DB().collection(CARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(cardId) },
+      { $push: { comments: { $each: [comment], $position: 0 } } },
+      { returnDocument: 'after' }
+    );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export const cardModel = {
@@ -92,5 +109,6 @@ export const cardModel = {
   createCard,
   findOneById,
   updateCard,
-  deleteCardByColumnId
+  deleteCardByColumnId,
+  unshiftNewComment
 };
