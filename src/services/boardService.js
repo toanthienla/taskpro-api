@@ -9,7 +9,7 @@ const createBoard = async (userId, reqBody) => {
   const board = {
     ...reqBody,
     slug: slugify(reqBody.title),
-    ownersIds: [userId]
+    ownerIds: [userId]
   };
 
   // Models

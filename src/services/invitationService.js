@@ -68,16 +68,16 @@ const updateBoardStatusInvitation = async (reqBody) => {
   if (!board) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found.');
   }
-  const boardOwnersAndMembers = board.ownersIds.concat(board.membersIds);
+  const boardOwnersAndMembers = board.ownerIds.concat(board.memberIds);
 
   // Status is accepted and the invitee is not a member of the board
   if (status === BOARD_INVITATION_STATUS.ACCEPTED) {
     if (!boardOwnersAndMembers.toString().includes(invitation.inviteeId.toString())) {
-      board.membersIds.push(invitation.inviteeId);
+      board.memberIds.push(invitation.inviteeId);
 
       // Add the invitee to the board members
       const updateBoardData = {
-        membersIds: board.membersIds,
+        memberIds: board.memberIds,
         updatedAt: new Date()
       };
       if (updateBoardData) {
