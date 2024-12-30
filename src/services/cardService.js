@@ -18,7 +18,7 @@ const createCard = async (reqBody) => {
   return createdCard;
 };
 
-const updateCard = async (cardId, reqBody, reqFile) => {
+const updateCard = async (cardId, reqBody, reqFile, userInfo) => {
   const updateData = {
     cardId: new ObjectId(cardId),
     ...reqBody,
@@ -33,6 +33,17 @@ const updateCard = async (cardId, reqBody, reqFile) => {
     // Upload avatar to cloudinary
     const uploadResult = await CloudinaryProvider.streamUpload(reqFile.buffer, 'card-covers');
     updateData.cover = uploadResult.secure_url;
+  }
+
+  // Use $push to add comment to comments in db
+  if (reqBody.commentToAdd) {
+    updateData.commentToAdd = {
+      ...reqBody.commentToAdd,
+      userId: new ObjectId(userInfo._id),
+      email: userInfo.email,
+      commentedAt: new Date()
+    };
+    return await cardModel.unshiftNewComment(cardId, updateData.commentToAdd);
   }
 
   const card = await cardModel.updateCard(updateData);

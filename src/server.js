@@ -8,6 +8,9 @@ import errorHandlingMiddleware from '~/middlewares/errorHandlingMiddleware';
 import cors from 'cors';
 import { corsOptions } from '~/config/cors';
 import cookieParser from 'cookie-parser';
+import socketIo from 'socket.io';
+import http from 'http';
+import { inviteUserToBoardSocket } from './sockets/inviteUserToBoardSocket';
 
 const app = express();
 
@@ -33,16 +36,24 @@ const START_SERVER = () => {
   // Use APIv1 routes
   app.use('/v1', APIs_V1);
 
-  // Express error hadling
+  // Error hadling middleware
   app.use(errorHandlingMiddleware);
 
+  // Create a server instance and pass the express app as a real-time server
+  const server = http.createServer(app);
+  const io = socketIo(server, { cors: corsOptions });
+  io.on('connection', (socket) => {
+    inviteUserToBoardSocket(socket);
+  });
+
+  // Use server to listen because server have express and socket.io
   if (env.BUILD_MODE === 'production') {
     // Config in Render.com deploy
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log('Production mode: TaskPro is running at https://taskpro-api-hwly.onrender.com');
     });
   } else {
-    app.listen(port, hostname, () => {
+    server.listen(port, hostname, () => {
       console.log(`Dev mode: TaskPro is running at http://${hostname}:${port}/`);
     });
   }

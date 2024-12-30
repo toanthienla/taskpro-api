@@ -7,13 +7,15 @@ import { StatusCodes } from 'http-status-codes';
 import { BOARD_TYPES } from '~/utils/constants';
 import { columnModel } from '~/models/columnModel';
 import { cardModel } from '~/models/cardModel';
+import { userModel } from './userModel';
 
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt'];
 const BOARD_COLLECTION_NAME = 'boards';
 const BOARD_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().min(3).max(50).required().trim().strict(),
   description: Joi.string().min(3).max(256).required().trim().strict(),
   slug: Joi.string().min(3).required().trim().strict(),
-  type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
+  type: Joi.string().valid(...Object.values(BOARD_TYPES)).required(),
 
   columnOrderIds: Joi.array().items(
     Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
@@ -86,6 +88,24 @@ const getBoard = async (userId, boardId) => {
           foreignField: 'boardId',
           as: 'cards'
         }
+      },
+      {
+        $lookup: {
+          from: userModel.USER_COLLECTION_NAME,
+          localField: 'ownersIds',
+          foreignField: '_id',
+          as: 'owners',
+          pipeline: [{ $project: { password: 0, verifyToken: 0 } }]
+        }
+      },
+      {
+        $lookup: {
+          from: userModel.USER_COLLECTION_NAME,
+          localField: 'membersIds',
+          foreignField: '_id',
+          as: 'members',
+          pipeline: [{ $project: { password: 0, verifyToken: 0 } }]
+        }
       }
     ]).toArray();
 
@@ -152,13 +172,33 @@ const getBoards = async (userId, page, itemsPerPage) => {
           }
         }
       ],
-      { collation: { locale: 'en' } } // Sort a before A
+      { collation: { locale: 'en' } } // Sort a before
     ).toArray();
 
     return {
       boards: res[0].queryBoards || [],
       totalBoards: res[0].queryTotalBoards[0]?.totalBoards || 0
     };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const updateBoard = async (boardId, updateData) => {
+  try {
+    // Filter data before update
+    Object.keys(updateData).forEach(fieldName => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete updateData[fieldName];
+      }
+    });
+
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(boardId) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    return result;
   } catch (error) {
     throw new Error(error);
   }
@@ -173,5 +213,6 @@ export const boardModel = {
   pushColumnOrderIds,
   putBoardColumnOrderId,
   deleteBoardColumnOrderIds,
-  getBoards
+  getBoards,
+  updateBoard
 };

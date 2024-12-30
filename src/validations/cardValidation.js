@@ -22,7 +22,12 @@ const updateCard = async (req, res, next) => {
   const schema = Joi.object({
     columnId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
     title: Joi.string().trim().strict(),
-    description: Joi.string().trim().strict()
+    description: Joi.string().trim().strict(),
+    commentToAdd: Joi.object({
+      avatar: Joi.string(),
+      displayName: Joi.string(),
+      content: Joi.string().trim().strict()
+    })
   });
 
   try {
