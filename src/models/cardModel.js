@@ -103,6 +103,23 @@ const unshiftNewComment = async (cardId, comment) => {
   }
 };
 
+const updateCardMemberIds = async (updateData) => {
+  try {
+    const { cardId, userId, action, updatedAt } = updateData;
+    const result = await GET_DB().collection(CARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(cardId) },
+      {
+        [action === 'add' ? '$push' : '$pull']: { memberIds: new ObjectId(userId) },
+        $set: { updatedAt }
+      },
+      { returnDocument: 'after' }
+    );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
@@ -110,5 +127,6 @@ export const cardModel = {
   findOneById,
   updateCard,
   deleteCardByColumnId,
-  unshiftNewComment
+  unshiftNewComment,
+  updateCardMemberIds
 };

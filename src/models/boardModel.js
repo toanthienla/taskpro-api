@@ -21,10 +21,10 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
     Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
   ).default([]),
 
-  ownersIds: Joi.array().items(
+  ownerIds: Joi.array().items(
     Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
   ).default([]),
-  membersIds: Joi.array().items(
+  memberIds: Joi.array().items(
     Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
   ).default([]),
 
@@ -40,7 +40,7 @@ const validateData = async (data) => {
 const createBoard = async (data) => {
   try {
     data = await validateData(data);
-    data.ownersIds = data.ownersIds.map(id => new ObjectId(id));
+    data.ownerIds = data.ownerIds.map(id => new ObjectId(id));
     return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(data);
   } catch (error) {
     throw new Error(error);
@@ -63,8 +63,8 @@ const getBoard = async (userId, boardId) => {
     const queryCondition = {
       _id: new ObjectId(boardId),
       $or: [
-        { ownersIds: { $all: [new ObjectId(userId)] } },
-        { membersIds: { $all: [new ObjectId(userId)] } }
+        { ownerIds: { $all: [new ObjectId(userId)] } },
+        { memberIds: { $all: [new ObjectId(userId)] } }
       ],
       _destroy: false
     };
@@ -92,7 +92,7 @@ const getBoard = async (userId, boardId) => {
       {
         $lookup: {
           from: userModel.USER_COLLECTION_NAME,
-          localField: 'ownersIds',
+          localField: 'ownerIds',
           foreignField: '_id',
           as: 'owners',
           pipeline: [{ $project: { password: 0, verifyToken: 0 } }]
@@ -101,7 +101,7 @@ const getBoard = async (userId, boardId) => {
       {
         $lookup: {
           from: userModel.USER_COLLECTION_NAME,
-          localField: 'membersIds',
+          localField: 'memberIds',
           foreignField: '_id',
           as: 'members',
           pipeline: [{ $project: { password: 0, verifyToken: 0 } }]
@@ -146,8 +146,8 @@ const getBoards = async (userId, page, itemsPerPage) => {
     const queryCondition = {
       $or: [
         // $all: Find me documents where this array field has these specific values
-        { ownersIds: { $all: [new ObjectId(userId)] } },
-        { membersIds: { $all: [new ObjectId(userId)] } }
+        { ownerIds: { $all: [new ObjectId(userId)] } },
+        { memberIds: { $all: [new ObjectId(userId)] } }
       ],
       _destroy: false
     };

@@ -46,6 +46,12 @@ const updateCard = async (cardId, reqBody, reqFile, userInfo) => {
     return await cardModel.unshiftNewComment(cardId, updateData.commentToAdd);
   }
 
+  // Add/remove member from card
+  if (reqBody.userId && reqBody.action) {
+    updateData.userId = new ObjectId(reqBody.userId);
+    return await cardModel.updateCardMemberIds(updateData);
+  }
+
   const card = await cardModel.updateCard(updateData);
   return card;
 };
