@@ -44,7 +44,7 @@ const putBoardColumnOrderIds = async (boardId, reqBody) => {
   return board;
 };
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilter) => {
   if (!page) {
     page = DEFAULT_PAGE;
   }
@@ -52,7 +52,7 @@ const getBoards = async (userId, page, itemsPerPage) => {
     itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
   }
 
-  const { boards, totalBoards } = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10));
+  const { boards, totalBoards } = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10), queryFilter);
 
   return { boards, totalBoards };
 };
