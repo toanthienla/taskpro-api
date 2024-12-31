@@ -18,6 +18,9 @@ const hostname = env.APP_HOST;
 const port = env.APP_PORT;
 
 const START_SERVER = () => {
+  // Vercel serverless function need to trust proxy
+  app.enable('trust proxy');
+
   // Disable browser caching request
   app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
