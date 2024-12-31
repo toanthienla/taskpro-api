@@ -29,14 +29,14 @@ const loginUser = async (req, res, next) => {
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'None',
+      sameSite: 'lax',
       maxAge: ms('14 days'),
       domain: '.vercel.app'
     });
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'None',
+      sameSite: 'lax',
       maxAge: ms('14 days'),
       domain: '.vercel.app'
     });
@@ -65,7 +65,7 @@ const refreshToken = async (req, res, next) => {
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'None',
+      sameSite: 'lax',
       maxAge: ms('14 days'),
       domain: '.vercel.app'
     });
