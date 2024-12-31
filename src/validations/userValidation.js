@@ -52,7 +52,6 @@ const updateUser = async (req, res, next) => {
       current_password: Joi.string().pattern(PASSWORD_RULE).message('Current password:', PASSWORD_RULE_MESSAGE),
       new_password: Joi.string().pattern(PASSWORD_RULE).message('New password:', PASSWORD_RULE_MESSAGE)
     });
-    console.log(req.body);
     await schema.validateAsync(req.body, { abortEarly: false });
     next();
   }

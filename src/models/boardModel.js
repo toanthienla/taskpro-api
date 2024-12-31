@@ -141,21 +141,31 @@ const deleteBoardColumnOrderIds = async (columnId) => {
     );
 };
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilter) => {
   try {
-    const queryCondition = {
-      $or: [
-        // $all: Find me documents where this array field has these specific values
-        { ownerIds: { $all: [new ObjectId(userId)] } },
-        { memberIds: { $all: [new ObjectId(userId)] } }
-      ],
-      _destroy: false
-    };
+    const queryCondition = [
+      {
+        $or: [
+          // $all: Find me documents where this array field has these specific values
+          { ownerIds: { $all: [new ObjectId(userId)] } },
+          { memberIds: { $all: [new ObjectId(userId)] } }
+        ]
+      },
+      { _destroy: false }
+    ];
+
+    // Handle query filter by in searchBoard field
+    if (queryFilter) {
+      Object.keys(queryFilter).forEach(key => {
+        // Use regex to search case-insensitive
+        queryCondition.push({ [key]: new RegExp(queryFilter[key], 'i') });
+      });
+    }
 
     const res = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate(
       [
         {
-          $match: { $and: [queryCondition] }
+          $match: { $and: queryCondition }
         },
         {
           $sort: { createdAt: -1 }
