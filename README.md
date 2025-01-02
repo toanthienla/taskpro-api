@@ -6,7 +6,7 @@ TaskPro API is a powerful Node.js/Express REST API that serves as the backend fo
 
 ### REST API Design with MVC
 
-  <img src="graph/apiArchitecture.png" alt="TaskPro API Architecture Diagram" width="100%"/>
+  <img src="graph/mvcPattern.png" alt="TaskPro API Architecture Diagram" width="100%"/>
 
 ### Entity Relationship Diagram (ERD)
 
