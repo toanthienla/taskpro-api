@@ -1,35 +1,45 @@
 # TaskPro API
 
-This repository houses the backend API for [**TaskPro**].
+TaskPro API is a powerful Node.js/Express REST API that serves as the backend for the TaskPro application. Built with modern MongoDB for data persistence, it provides a robust foundation for task management functionality.
 
-## Key Features
+## System Architecture
 
--   **RESTful Architecture:** Follows best practices to ensure scalability, maintainability, and ease of use.
+### REST API Design with MVC
+
+  <img src="graph/apiArchitecture.png" alt="TaskPro API Architecture Diagram" width="100%"/>
+
+### Entity Relationship Diagram (ERD)
+
+  <img src="graph/databaseSchema.png" alt="TaskPro API Database Schema" width="100%"/>
 
 ## Tech Stack
 
--   **MongoDB (v6.x):** The NoSQL database used for storing application data.
--   **MongoDB Node.js Driver:** Facilitates interaction with the MongoDB database.
--   **Express.js:** Provides a robust and minimalist web framework for Node.js.
--   **Joi:** Enables schema-based validation for incoming requests.
+-   **Runtime**: Node.js
+-   **Framework**: Express.js
+-   **Database**: MongoDB
+-   **Validation**: Joi
+-   **Real-time**: Socket.IO
+-   **File Storag**e: Cloudinary
+-   **Email Service**: Brevo
+-   **Authentication**: JWT
 
 ## Development Tools
 
 -   **Babel:** Allows the use of modern JavaScript (ES6+) features.
 -   **ESLint:** Maintains code quality and consistency.
 
-## API Structure
+## Project Structure
 
-<div align="center">
-  <img src="graph/apiArchitecture.png" alt="TaskPro API Architecture Diagram" width="100%"/> 
-</div>
-
--   **Middlewares:** Handle common functionalities like error handling.
--   **Routers:** Define API endpoints and their corresponding handlers.
--   **Validations:** Ensure data integrity by validating request data.
--   **Controllers:** Handle incoming requests.
--   **Services:** Encapsulate logic and data access operations.
--   **Models:** Define function to interact with the database.
+-   **`~/routes`**: API routes definition and mapping.
+-   **`~/validations`**: Input validation schemas and logic.
+-   **`~/controllers`**: Request handlers and API logic.
+-   **`~/services`**: Business logic and data processing.
+-   **`~/models`**: Database models and data structures.
+-   **`~/middlewares`**: Request handling, auth, and error middleware.
+-   **`~/providers`**: Integration with external services (e.g., Cloudinary, Brevo).
+-   **`~/sockets`**: Socket.IO real-time communication handlers.
+-   **`~/config`**: Application configuration and settings.
+-   **`~/utils`**: Utility functions and constants.
 
 ## Getting Started
 
@@ -37,7 +47,7 @@ This repository houses the backend API for [**TaskPro**].
 2.  Clone the repository: `git clone https://github.com/toanthienla/taskpro-api.git`
 3.  Install dependencies: `npm install`
 4.  Configure environment variables (database connection, etc.).
-5.  Start the API server: `npm start`
+5.  Start the API development server: `npm run dev`
 
 ## Contributing
 
