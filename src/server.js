@@ -18,12 +18,6 @@ const hostname = env.APP_HOST;
 const port = env.APP_PORT;
 
 const START_SERVER = () => {
-  // Disable browser caching request
-  app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-store');
-    next();
-  });
-
   // Config Cookie Parser (get cookies from browser)
   app.use(cookieParser());
 
@@ -48,13 +42,12 @@ const START_SERVER = () => {
 
   // Use server to listen because server have express and socket.io
   if (env.BUILD_MODE === 'production') {
-    // Config in Render.com deploy
-    server.listen(process.env.PORT, () => {
-      console.log('Production mode: TaskPro is running at https://taskpro-api-hwly.onrender.com');
+    server.listen(port, () => {
+      console.log(`PRODUCTION: TaskPro server is running on port ${port}`);
     });
   } else {
     server.listen(port, hostname, () => {
-      console.log(`Dev mode: TaskPro is running at http://${hostname}:${port}/`);
+      console.log(`DEV: TaskPro server is running at http://${hostname}:${port}`);
     });
   }
 

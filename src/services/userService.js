@@ -42,11 +42,11 @@ const createUser = async (reqBody) => {
         <p>Thanks for signing up for TaskPro! We're excited to have you on board.</p>
         <p>To unlock the full power of TaskPro and start managing your tasks like a pro, please verify your email address by clicking the button below:</p>
         <p style="text-align: left;">
-        <a href="${verificationLink}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+        <a href="${verificationLink}">${verificationLink}</a>
         </p>
       <p>This will confirm your account and give you access to all of TaskPro's amazing features.</p>
-      <br><p>If you didn't create an account with TaskPro, you can safely ignore this email.</p>
-      <br><p>Happy tasking,</p>
+      <p>If you didn't create an account with TaskPro, you can safely ignore this email.</p>
+      <p>Happy tasking,</p>
       <p>TaskPro</p>
   `;
 
@@ -90,7 +90,7 @@ const loginUser = async (reqBody) => {
 
   const user = await userModel.findOneByEmail(email);
   if (!user) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Invalid email or password');
+    throw new ApiError(StatusCodes.FORBIDDEN, 'Invalid email or password');
   }
   if (!bcryptjs.compareSync(password, user.password)) {
     throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Invalid email or password');

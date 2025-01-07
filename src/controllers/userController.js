@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { userService } from '~/services/userService';
 import ms from 'ms';
 import ApiError from '~/utils/ApiError';
+import env from '~/config/enviroment';
 
 const createUser = async (req, res, next) => {
   try {
@@ -28,14 +29,16 @@ const loginUser = async (req, res, next) => {
     // Return handle http only cookie
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: ms('14 days')
+      secure: env.BUILD_MODE === 'production',
+      sameSite: env.BUILD_MODE === 'production' ? 'None' : 'Lax',
+      domain: env.BUILD_MODE === 'production' ? 'taskpro.site' : undefined,
+      maxAge: ms('1h')
     });
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      secure: env.BUILD_MODE === 'production',
+      sameSite: env.BUILD_MODE === 'production' ? 'None' : 'Lax',
+      domain: env.BUILD_MODE === 'production' ? 'taskpro.site' : undefined,
       maxAge: ms('14 days')
     });
 
@@ -62,8 +65,9 @@ const refreshToken = async (req, res, next) => {
 
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      secure: env.BUILD_MODE === 'production',
+      sameSite: env.BUILD_MODE === 'production' ? 'None' : 'Lax',
+      domain: env.BUILD_MODE === 'production' ? 'taskpro.site' : undefined,
       maxAge: ms('14 days')
     });
 
