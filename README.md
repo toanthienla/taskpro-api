@@ -49,7 +49,7 @@ TaskPro API is a powerful Node.js/Express REST API that serves as the backend fo
 3.  Install dependencies: `npm install`
 4.  Configure environment variables (database connection, etc.).
 5.  Start the API development server: `npm run dev`
-6.  Frontend GitHub Repository: (taskpro-web)[https://github.com/toanthienla/taskpro-web]
+6.  Frontend GitHub Repository: [taskpro-web](https://github.com/toanthienla/taskpro-web)
 
 ## Contributing
 
