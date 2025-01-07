@@ -1,9 +1,7 @@
 import env from '~/config/enviroment';
 
-export const WHITELIST_DOMAINS = [
-  // Taskpro domain hosting
-  env.WEBSITE_DOMAIN_PRODUCTION
-];
+// Taskpro domain hosting
+export const WHITELIST_DOMAINS = [env.WEBSITE_DOMAIN_PRODUCTION];
 
 export const BOARD_TYPES = {
   PUBLIC: 'public',

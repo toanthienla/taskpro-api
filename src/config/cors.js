@@ -10,7 +10,7 @@ export const corsOptions = {
       return callback(null, true);
     }
 
-    // Only whitelist domain can access if not dev mode
+    // Only whitelist domain can access
     if (WHITELIST_DOMAINS.includes(origin)) {
       return callback(null, true);
     }
